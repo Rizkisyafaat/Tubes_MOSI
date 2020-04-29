@@ -18,8 +18,23 @@ y_range = y_max-y_min
 x_position = []
 y_position = []
 
+terinfeksi=[]
+waktu_infeksi=[]
+
+
 for individu in range(jumlah_individu):
     x_position.append(random.randint(x_min,x_max))
     y_position.append(random.randint(y_min,x_max))
 
-print(x_position[0])
+    #status terinfeksi
+    if (individu < terinfeksi):
+        terinfeksi.append(True)
+    else:
+        terinfeksi.append(False)
+
+    # initial status imune
+    imunitas.append(False)
+
+    # initial waktu_infeksi
+    waktu_infeksi.append(0)
+
