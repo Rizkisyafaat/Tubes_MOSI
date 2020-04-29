@@ -1,11 +1,13 @@
 import random
+import matplotlib.pyplot as plt
+from celluloid import Camera as Camera
+import numpy as np
 
 #inisialisasi variabel scalar
 jumlah_individu = 200
 terinfeksi = jumlah_individu * 0.05
 probabilitas_bergerak = 0.8
 waktu_pemulihan = 10
-
 
 #ukuran ruang simulasi
 x_min = 0
@@ -19,9 +21,12 @@ y_range = y_max-y_min
 x_position = []
 y_position = []
 
-status_terinfeksi=[]
-status_imunitas=[]
-waktu_infeksi=[]
+status_terinfeksi = []
+status_imunitas = []
+waktu_infeksi = []
+total_infeksi = []
+
+animasi = []
 
 def updatePosition(x,y):
     arah = random.random()
@@ -75,23 +80,58 @@ for individu in range(jumlah_individu):
     # initial waktu_infeksi
     waktu_infeksi.append(0)
 
+Camera = Camera(plt.figure())
+
 while (terinfeksi > 0):
     for i in range(jumlah_individu):
-        updatePosition(x_position[i],y_position[i])
+        posisi_skrg = updatePosition(x_position[i],y_position[i])
 
-        x = boundary(updatePosition[0], updatePosition[1]) [0]
-        y = boundary(updatePosition[0], updatePosition[1]) [1]
+        x = boundary(posisi_skrg[0], posisi_skrg[1])[0]
+        y = boundary(posisi_skrg[0], posisi_skrg[1])[1]
 
         if (status_terinfeksi[i]):
             waktu_infeksi[i] = waktu_infeksi[i] + 1
-
 
         if (waktu_infeksi[i] > waktu_pemulihan):
              status_imunitas[i] = True
              waktu_infeksi[i] = 0
              terinfeksi = terinfeksi - 1
 
+        if status_imunitas[i] == True:
+            a = False
+        else:
+            a = True
+        if status_terinfeksi[i] == True:
+            b = False
+        else:
+            b = True
 
-       if (status_imunitas[i]==False & status_terinfeksi[i]==False & cek_posisi(x, y, x_position, y_position)):
-             status_terinfeksi[i] = True
-             terinfeksi = terinfeksi + 1
+        if (a & b & cek_posisi(x, y, x_position, y_position)):
+            # plt.subplot(1, 2, 1)
+            # plt.scatter(*animasi, c="red", s=50)
+            status_terinfeksi[i] = True
+            terinfeksi = terinfeksi + 1
+
+        x_position[i] = x
+        y_position[i] = y
+
+        koordinat = [x_position,y_position]
+        animasi = np.c_[koordinat]
+
+    total_infeksi.append(terinfeksi)
+
+    plt.figure(1)
+    plt.subplot(1, 2, 1)
+    plt.scatter(*animasi, c="green", s=50)
+    plt.title("Simulasi Random Walk Penyebaran Virus")
+    plt.subplot(1, 2, 2)
+    plt.plot(total_infeksi, c="blue")
+    Camera.snap()
+
+
+anim = Camera.animate(interval=1000)
+plt.grid(True,which="both")
+plt.legend()
+plt.title("Grafik Penyebaran Virus")
+
+plt.show()
