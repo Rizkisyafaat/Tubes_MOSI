@@ -26,6 +26,7 @@ status_imunitas = []
 waktu_infeksi = []
 total_infeksi = []
 
+# menentukan arah bergerak dengan probabilitas bergerak 80%
 def updatePosition(x, y):
     arah = random.random()
     if arah <= 0.2:
@@ -37,7 +38,6 @@ def updatePosition(x, y):
     elif arah <= 0.8:
         y = y + 1
     return [x, y]
-
 
 # Boundary
 def boundary(x, y):
@@ -51,8 +51,7 @@ def boundary(x, y):
         y = y + y_range
     return [x, y]
 
-
-# jarak orang sehat dan orang sakit = dekat (ketularan)
+# ordinat orang sehat = orang sakit, maka terinfeksi
 def cek_posisi(x, y, x_position, y_position):
     status = False
     i = 0
@@ -62,21 +61,19 @@ def cek_posisi(x, y, x_position, y_position):
         i = i + 1
     return status
 
-
+# menentukan posisi awal dan status terinfeksi
 for individu in range(jumlah_individu):
     x_position.append(random.randint(x_min, x_max))
     y_position.append(random.randint(y_min, x_max))
 
-    # status terinfeksi
     if (individu < terinfeksi):
         status_terinfeksi.append(True)
     else:
         status_terinfeksi.append(False)
 
-    # initial status imune
     status_imunitas.append(False)
 
-    # initial waktu_infeksi
+    # inisialisasi waktu_infeksi
     waktu_infeksi.append(0)
 
 Camera = Camera(plt.figure())
@@ -88,6 +85,7 @@ while (terinfeksi > 0):
     y_health = []
     x_infect = []
     y_infect = []
+
     for i in range(jumlah_individu):
         posisi_skrg = updatePosition(x_position[i], y_position[i])
 
@@ -110,6 +108,7 @@ while (terinfeksi > 0):
         else:
             b = True
 
+        # jika tidak memiliki imunitas dan belum terinfeksi dan berdekatan
         if (a & b & cek_posisi(x, y, x_position, y_position)):
             status_terinfeksi[i] = True
             terinfeksi = terinfeksi + 1
@@ -119,6 +118,7 @@ while (terinfeksi > 0):
 
     total_infeksi.append(terinfeksi)
 
+    # memisahkan ordinat individu terinfeksi dan tidak
     for j in range(jumlah_individu):
         if status_imunitas[j] or status_terinfeksi[j] == False:
             x_health.append(x_position[j])
@@ -133,23 +133,23 @@ while (terinfeksi > 0):
     animasi_sakit = np.c_[sakit]
 
     plt.subplot(1, 2, 1)
+    plt.title("Penyebaran Virus")
     plt.scatter(*animasi_sehat, c="green", s=30, label="sehat")
     plt.scatter(*animasi_sakit, c="red", s=30, label="terinfeksi")
 
-    plt.title("Penyebaran Virus")
+
     plt.subplot(1, 2, 2)
+    plt.title("Grafik Terinfeksi")
     plt.plot(total_infeksi, c="red")
     Camera.snap()
 
 anim = Camera.animate(interval=1000)
 plt.grid(True, which="both")
-plt.legend()
-plt.title("Grafik Terinfeksi")
 plt.xlabel("Hari")
 plt.ylabel("Terinfeksi")
 print('___________________Data___________________')
 print("jumlah individu         :", jumlah_individu)
-print("puncak total terinfeksi :", max(total_infeksi))
+print("puncak total terinfeksi :", int(max(total_infeksi)))
 print("total waktu pemulihan   :", waktu)
 
 plt.show()
