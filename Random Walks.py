@@ -3,7 +3,6 @@ import matplotlib.pyplot as plt
 from celluloid import Camera as Camera
 import numpy as np
 
-# plt.figure(figsize=(10, 5))
 # inisialisasi variabel scalar
 jumlah_individu = 200
 terinfeksi = jumlah_individu * 0.05
@@ -26,9 +25,6 @@ status_terinfeksi = []
 status_imunitas = []
 waktu_infeksi = []
 total_infeksi = []
-
-animasi = []
-
 
 def updatePosition(x, y):
     arah = random.random()
@@ -120,9 +116,6 @@ while (terinfeksi > 0):
 
         x_position[i] = x
         y_position[i] = y
-
-        # koordinat = [x_position, y_position]
-        # animasi = np.c_[koordinat]
 
     total_infeksi.append(terinfeksi)
 
