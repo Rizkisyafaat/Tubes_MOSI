@@ -3,6 +3,7 @@ import matplotlib.pyplot as plt
 from celluloid import Camera as Camera
 import numpy as np
 
+# plt.figure(figsize=(10, 5))
 # inisialisasi variabel scalar
 jumlah_individu = 200
 terinfeksi = jumlah_individu * 0.05
@@ -83,8 +84,14 @@ for individu in range(jumlah_individu):
     waktu_infeksi.append(0)
 
 Camera = Camera(plt.figure())
+waktu = 0
 
 while (terinfeksi > 0):
+    waktu = waktu + 1
+    x_health = []
+    y_health = []
+    x_infect = []
+    y_infect = []
     for i in range(jumlah_individu):
         posisi_skrg = updatePosition(x_position[i], y_position[i])
 
@@ -94,9 +101,8 @@ while (terinfeksi > 0):
         if (status_terinfeksi[i]):
             waktu_infeksi[i] = waktu_infeksi[i] + 1
 
-        if (waktu_infeksi[i] > waktu_pemulihan):
+        if (waktu_infeksi[i] == waktu_pemulihan):
             status_imunitas[i] = True
-            waktu_infeksi[i] = 0
             terinfeksi = terinfeksi - 1
 
         if status_imunitas[i] == True:
@@ -115,15 +121,29 @@ while (terinfeksi > 0):
         x_position[i] = x
         y_position[i] = y
 
-        koordinat = [x_position, y_position]
-        animasi = np.c_[koordinat]
+        # koordinat = [x_position, y_position]
+        # animasi = np.c_[koordinat]
 
     total_infeksi.append(terinfeksi)
 
-    plt.figure(1)
+    for j in range(jumlah_individu):
+        if status_imunitas[j] or status_terinfeksi[j] == False:
+            x_health.append(x_position[j])
+            y_health.append(y_position[j])
+        elif status_imunitas[j] == False and status_terinfeksi[j]:
+            x_infect.append(x_position[j])
+            y_infect.append(y_position[j])
+
+    sehat = [x_health, y_health]
+    animasi_sehat = np.c_[sehat]
+    sakit = [x_infect, y_infect]
+    animasi_sakit = np.c_[sakit]
+
     plt.subplot(1, 2, 1)
-    plt.scatter(*animasi, c="green", s=50)
-    plt.title("Simulasi Random Walk Penyebaran Virus")
+    plt.scatter(*animasi_sehat, c="green", s=30, label="sehat")
+    plt.scatter(*animasi_sakit, c="red", s=30, label="terinfeksi")
+
+    plt.title("Penyebaran Virus")
     plt.subplot(1, 2, 2)
     plt.plot(total_infeksi, c="red")
     Camera.snap()
@@ -131,11 +151,12 @@ while (terinfeksi > 0):
 anim = Camera.animate(interval=1000)
 plt.grid(True, which="both")
 plt.legend()
-plt.title("Grafik Penyebaran Virus")
-plt.xlabel("hari")
+plt.title("Grafik Terinfeksi")
+plt.xlabel("Hari")
 plt.ylabel("Terinfeksi")
 print('___________________Data___________________')
-print('jumlah individu \t\t:', jumlah_individu)
-print('puncak total terinfeksi \t:', max(total_infeksi))
+print("jumlah individu         :", jumlah_individu)
+print("puncak total terinfeksi :", max(total_infeksi))
+print("total waktu pemulihan   :", waktu)
 
 plt.show()
